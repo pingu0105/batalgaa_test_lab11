@@ -109,3 +109,70 @@ mvn test-compile org.pitest:pitest-maven:mutationCoverage -> results/pit-start.t
 "replaced int return with 0", `hasViolation`-ийн мутантууд, мөр 36-ийн switch мутант бүгд үхсэн.
 Үлдсэн 18 амьд мутант нь бүгд **changed conditional boundary** болон зарим **removed conditional** (мөр 20, 23–26, 48, 52–54) —
 эдгээр нь зөвхөн зааг утгын оролтоор алагдана, тиймээс B2 хэрэгтэй.
+
+### B2 — Зааг утгын тестүүд нэмэх
+
+Нэмсэн тестүүд (`@ParameterizedTest` + `@CsvSource`):
+
+| Тест | Оролтууд | Алсан мутантууд |
+|---|---|---|
+| `letterGrade_boundaries` | 100, 90/89.99, 80/79.99, 70/69.99, 60/59.99, 0 | Мөр 20, 23–26-ийн conditional boundary |
+| `letterGrade_justOutsideRange_throws` | -0.01, 100.01 | Хязгаарын шалгалтыг бататгана |
+| `gpa_eachLetterGrade`, `gpa_allLettersTogether` | A, B, C, D, F тус бүр + бүгд хамт (= 2.0) | switch-ийн бүх салаа |
+| `scholarship_boundaries` | 3.8/15 → 100, 3.79/15 → 70, 3.8/14 → 70, 3.4/12 → 70, 3.39/12 → 50, 3.4/11 → 50, 3.0/0 → 50, 2.99/20 → 0 | Мөр 52–54-ийн boundary ба removed conditional |
+| `scholarship_inputLimits_areValid` | gpa 0, gpa 4, credits 0 | Мөр 48-ийн boundary ба removed conditional |
+| `scholarship_justOutsideLimits_throws` | gpa -0.01, 4.01 | Мөр 48 |
+| `scholarship_violation_alwaysZero` | Зөрчилтэй 3 тохиолдол | Мөр 51 |
+
+**Хэмжилт (results/pit-B2.txt, эцсийн):**
+
+```
+>> Line Coverage (for mutated classes only): 25/25 (100%)
+>> Generated 63 mutations Killed 63 (100%)
+>> Mutations with no coverage 0. Test strength 100%
+```
+
+![PIT эцсийн тайлан](images/pit-final.png)
+
+### Хэмжилтийн явц
+
+| Хэмжилт | Файл | Line coverage | Killed / Generated | Mutation coverage | Test strength |
+|---|---|---|---|---|---|
+| Эхлэл | results/pit-start.txt | 25/25 (100%) | 17 / 63 | **27%** | 27% |
+| B1-ийн дараа | results/pit-B1.txt | 25/25 (100%) | 45 / 63 | **71%** | 71% |
+| B2-ийн дараа | results/pit-B2.txt | 25/25 (100%) | 63 / 63 | **100%** | 100% |
+
+Line coverage гурван хэмжилтэд ижил 100% байсан ч mutation coverage 27% → 71% → 100% болж өссөн.
+Бүх 63 мутант алагдсан тул equivalent гэж хасах мутант үлдээгүй; Test Strength 100%.
+
+## C: Гараар нэг мутант — PIT-гүйгээр
+
+`scholarship()`-ийн 52-р мөрийг гараар өөрчилсөн:
+
+```diff
+-        if (gpa >= 3.8 && credits >= 15) return 100;
++        if (gpa > 3.8 && credits >= 15) return 100;
+```
+
+`mvn test 2>&1 | tee results/mvn-test-manual-mutant.txt` ажиллуулахад:
+
+```
+[ERROR] Tests run: 34, Failures: 1, Errors: 0, Skipped: 0
+[ERROR]   ScholarshipCalculatorTest.scholarship_boundaries:138 expected: <100> but was: <70>
+[INFO] BUILD FAILURE
+```
+
+**Унасан тест:** `scholarship_boundaries` — эхний мөр `[1]` (`gpa = 3.8, credits = 15, хүлээгдэх = 100`).
+Мутацитай кодод 3.8 нь `> 3.8` нөхцөлийг хангахгүй тул 100-ын оронд 70 буцаасан — яг B2-д нэмсэн зааг тест мутантыг барьсан.
+Дараа нь `git restore src/main`-ээр кодыг буцаасан (мутацитай код commit хийгдээгүй; `git diff HEAD -- src/main` хоосон).
+Эхний сул багц энэ мутантыг барихгүй байсан: тэр багцад 3.8 гэсэн оролт байгаагүй бөгөөд `assertTrue(0 <= s <= 100)` 70-ыг ч зөвшөөрнө.
+
+### Өөрийн зохиосон equivalent мутант
+
+```diff
+-        if (scores == null || scores.length == 0) {
++        if (scores == null || scores.length <= 0) {
+```
+
+Java-д массивын урт (`length`) хэзээ ч сөрөг байж чаддаггүй тул `length == 0` ба `length <= 0` нь ямар ч оролтод яг ижил үр дүн өгнө.
+Програмын зан төлөв огт өөрчлөгдөхгүй учраас аль ч тест энэ мутантыг "алах" боломжгүй — энэ нь тест дутуу биш, жинхэнэ **equivalent** мутант юм.
