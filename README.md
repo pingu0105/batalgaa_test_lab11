@@ -59,7 +59,7 @@ mvn test-compile org.pitest:pitest-maven:mutationCoverage -> results/pit-start.t
 | 25 | `score >= 70` | changed conditional boundary; removed conditional (true/false); replaced return value with "" | 4 | Тест дутуу | `assertEquals("C", ...)`; 70 / 69.99 зааг тест |
 | 26 | `score >= 60` | changed conditional boundary; removed conditional (true/false); replaced return value with "" | 4 | Тест дутуу | `assertEquals("D", ...)`; 60 / 59.99 зааг тест |
 | 27 | `return "F"` | replaced return value with "" | 1 | Тест дутуу | `assertEquals("F", ...)` |
-| 36 | `switch (letterGrade(s))` | Changed switch default to be first case | 1 | Тест дутуу (B2-ийн дараа дахин шалгана) | Зөвхөн F дүнтэй `gpa` = 0.0 гэж яг утгаар шалгах |
+| 36 | `switch (letterGrade(s))` | Changed switch default to be first case | 1 | Тест дутуу | Зөвхөн F дүнтэй `gpa` = 0.0 гэж яг утгаар шалгах |
 | 38 | `total += 3` (B) | Replaced double addition with subtraction | 1 | Тест дутуу | `gpa({85}) == 3.0` яг утга |
 | 40 | `total += 1` (D) | Replaced double addition with subtraction | 1 | Тест дутуу | `gpa({65}) == 1.0` яг утга |
 | 44 | `return total / scores.length` | replaced double return with 0.0d | 1 | Тест дутуу | `gpa`-г `assertEquals(..., 1e-9)`-ээр яг утгаар шалгах |
@@ -78,10 +78,34 @@ mvn test-compile org.pitest:pitest-maven:mutationCoverage -> results/pit-start.t
   `assertNotNull` зөвхөн null биш эсэхийг шалгадаг тул тест дутуу (сул assertion).
 - **Мөр 36–44 (gpa) — тест дутуу:** нэмэхийг хасах болгох, 0.0 буцаах нь голчийн утгыг өөрчилдөг ч
   `assertTrue(0 <= g <= 4)` муж шалгалт тэр утгуудыг зөвшөөрдөг тул тест дутуу.
-  Мөр 36-ийн switch мутант нь String switch-ийн аль хэсэгт хийгдсэнээс хамаарч equivalent байж магадгүй тул
-  B2-ийн дараа (F дүнг яг утгаар шалгасны дараа) амьд үлдвэл equivalent гэж дахин ангилна.
+  Мөр 36-ийн switch мутант нь String switch-ийн аль хэсэгт хийгдсэнээс хамаарч equivalent байж магадгүй гэж
+  эхэндээ эргэлзсэн боловч B1-д `gpa({40}) == 0.0` гэж яг утгаар шалгахад алагдсан — тэгэхээр equivalent биш, тест дутуу байсан.
 - **Мөр 51–54 (scholarship) — тест дутуу:** 100/70/50-г 0 болгох, нөхцөлийг солих нь тэтгэлгийн хувийг өөрчилдөг ч
   `assertTrue(0 <= s <= 100)` бүх боломжит хариуг зөвшөөрдөг, мөн 3.8/15, 3.4/12, 3.0 зааг утгууд тестлэгдээгүй тул тест дутуу.
 
 Эхний шинжилгээгээр **equivalent мутант олдсонгүй** — 46 амьд мутант бүгд бодит зан төлөвийг өөрчилдөг тул сул assertion
 эсвэл зааг утгын тест дутуугаас үүдэлтэй.
+
+## B: Тестүүдээ хүчтэй болгох
+
+### B1 — Assertion-уудыг яг утгын болгох
+
+Оролтуудыг өөрчлөлгүй, зөвхөн шалгалтуудыг солисон:
+
+| Өмнө (сул) | Дараа (яг утга) |
+|---|---|
+| `assertNotNull(calc.letterGrade(95))` | `assertEquals("A", calc.letterGrade(95))` (B, C, D, F мөн адил) |
+| `assertTrue(g1 >= 0 && g1 <= 4)` | `assertEquals(3.5, calc.gpa({95, 85}), 1e-9)`; `{75, 65}` → 1.5; `{40}` → 0.0 |
+| `assertTrue(s1 >= 0 && s1 <= 100)` | `assertEquals(100, calc.scholarship(3.9, 16, false))`; 70, 50, 0, 0 |
+
+**Хэмжилт (results/pit-B1.txt):**
+
+```
+>> Generated 63 mutations Killed 45 (71%)
+>> Mutations with no coverage 0. Test strength 71%
+```
+
+Зөвхөн assertion-ыг чангалснаар 28 мутант нэмж алагдсан: "replaced return value", "addition → subtraction",
+"replaced int return with 0", `hasViolation`-ийн мутантууд, мөр 36-ийн switch мутант бүгд үхсэн.
+Үлдсэн 18 амьд мутант нь бүгд **changed conditional boundary** болон зарим **removed conditional** (мөр 20, 23–26, 48, 52–54) —
+эдгээр нь зөвхөн зааг утгын оролтоор алагдана, тиймээс B2 хэрэгтэй.
