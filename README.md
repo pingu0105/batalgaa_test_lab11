@@ -81,21 +81,21 @@ mvn test-compile org.pitest:pitest-maven:mutationCoverage -> results/pit-start.t
 
 | Мөр | Код | Мутаци (PIT-ийн тайлбар) | Тоо | Ангилал | Арга хэмжээ |
 |---|---|---|---|---|---|
-| 20 | `score < 0 \|\| score > 100` | changed conditional boundary (`<` → `<=`, `>` → `>=`) | 2 | Тест дутуу | `letterGrade(0)`, `letterGrade(100)` хүчинтэй гэж шалгах зааг тест |
-| 23 | `score >= 90` | changed conditional boundary; removed conditional (true/false); replaced return value with "" | 4 | Тест дутуу | `assertEquals("A", ...)`; 90 / 89.99 зааг тест |
-| 24 | `score >= 80` | changed conditional boundary; removed conditional (true/false); replaced return value with "" | 4 | Тест дутуу | `assertEquals("B", ...)`; 80 / 79.99 зааг тест |
-| 25 | `score >= 70` | changed conditional boundary; removed conditional (true/false); replaced return value with "" | 4 | Тест дутуу | `assertEquals("C", ...)`; 70 / 69.99 зааг тест |
-| 26 | `score >= 60` | changed conditional boundary; removed conditional (true/false); replaced return value with "" | 4 | Тест дутуу | `assertEquals("D", ...)`; 60 / 59.99 зааг тест |
-| 27 | `return "F"` | replaced return value with "" | 1 | Тест дутуу | `assertEquals("F", ...)` |
-| 36 | `switch (letterGrade(s))` | Changed switch default to be first case | 1 | Тест дутуу | Зөвхөн F дүнтэй `gpa` = 0.0 гэж яг утгаар шалгах |
-| 38 | `total += 3` (B) | Replaced double addition with subtraction | 1 | Тест дутуу | `gpa({85}) == 3.0` яг утга |
-| 40 | `total += 1` (D) | Replaced double addition with subtraction | 1 | Тест дутуу | `gpa({65}) == 1.0` яг утга |
-| 44 | `return total / scores.length` | replaced double return with 0.0d | 1 | Тест дутуу | `gpa`-г `assertEquals(..., 1e-9)`-ээр яг утгаар шалгах |
-| 48 | `gpa < 0 \|\| gpa > 4 \|\| credits < 0` | changed conditional boundary ×2 (`gpa < 0`, `credits < 0`); removed conditional ×1 | 3 | Тест дутуу | gpa = 0, credits = 0 хүчинтэй; gpa = -0.1 алдаа шиддэг гэж шалгах |
-| 51 | `if (hasViolation) return 0` | removed conditional (equality → true / false) | 2 | Тест дутуу | Зөрчилтэй → яг 0, зөрчилгүй → яг 100 гэж шалгах |
-| 52 | `gpa >= 3.8 && credits >= 15` → 100 | changed conditional boundary ×2; removed conditional ×4; replaced int return with 0 | 7 | Тест дутуу | `assertEquals(100, ...)`; 3.8/15, 3.79/15, 3.8/14 зааг тест |
-| 53 | `gpa >= 3.4 && credits >= 12` → 70 | changed conditional boundary ×2; removed conditional ×4; replaced int return with 0 | 7 | Тест дутуу | `assertEquals(70, ...)`; 3.4/12, 3.39/12, 3.4/11 зааг тест |
-| 54 | `gpa >= 3.0` → 50 | changed conditional boundary; removed conditional (true/false); replaced int return with 0 | 4 | Тест дутуу | `assertEquals(50, ...)`; 3.0 / 2.99 зааг тест |
+| 20 | `score < 0 \|\| score > 100` | Нөхцөлийн заагийг өөрчилсөн (`<` → `<=`, `>` → `>=`) — *changed conditional boundary* | 2 | Тест дутуу | `letterGrade(0)`, `letterGrade(100)` хүчинтэй гэж шалгах зааг тест |
+| 23 | `score >= 90` | Нөхцөлийн заагийг өөрчилсөн (`>=` → `>`); нөхцөлийг үргэлж үнэн / худал болгосон; буцаах утгыг `""` болгосон — *changed conditional boundary; removed conditional; replaced return value* | 4 | Тест дутуу | `assertEquals("A", ...)`; 90 / 89.99 зааг тест |
+| 24 | `score >= 80` | Нөхцөлийн заагийг өөрчилсөн (`>=` → `>`); нөхцөлийг үргэлж үнэн / худал болгосон; буцаах утгыг `""` болгосон — *changed conditional boundary; removed conditional; replaced return value* | 4 | Тест дутуу | `assertEquals("B", ...)`; 80 / 79.99 зааг тест |
+| 25 | `score >= 70` | Нөхцөлийн заагийг өөрчилсөн (`>=` → `>`); нөхцөлийг үргэлж үнэн / худал болгосон; буцаах утгыг `""` болгосон — *changed conditional boundary; removed conditional; replaced return value* | 4 | Тест дутуу | `assertEquals("C", ...)`; 70 / 69.99 зааг тест |
+| 26 | `score >= 60` | Нөхцөлийн заагийг өөрчилсөн (`>=` → `>`); нөхцөлийг үргэлж үнэн / худал болгосон; буцаах утгыг `""` болгосон — *changed conditional boundary; removed conditional; replaced return value* | 4 | Тест дутуу | `assertEquals("D", ...)`; 60 / 59.99 зааг тест |
+| 27 | `return "F"` | Буцаах утгыг `""` болгосон — *replaced return value* | 1 | Тест дутуу | `assertEquals("F", ...)` |
+| 36 | `switch (letterGrade(s))` | switch-ийн `default` салааг эхний `case` болгосон — *changed switch default* | 1 | Тест дутуу | Зөвхөн F дүнтэй `gpa` = 0.0 гэж яг утгаар шалгах |
+| 38 | `total += 3` (B) | Нэмэхийг (`+=`) хасах болгосон — *replaced addition with subtraction* | 1 | Тест дутуу | `gpa({85}) == 3.0` яг утга |
+| 40 | `total += 1` (D) | Нэмэхийг (`+=`) хасах болгосон — *replaced addition with subtraction* | 1 | Тест дутуу | `gpa({65}) == 1.0` яг утга |
+| 44 | `return total / scores.length` | Буцаах утгыг `0.0` болгосон — *replaced double return with 0.0* | 1 | Тест дутуу | `gpa`-г `assertEquals(..., 1e-9)`-ээр яг утгаар шалгах |
+| 48 | `gpa < 0 \|\| gpa > 4 \|\| credits < 0` | Нөхцөлийн заагийг өөрчилсөн ×2 (`gpa < 0`, `credits < 0` → `<=`); нөхцөлийг арилгасан ×1 — *changed conditional boundary; removed conditional* | 3 | Тест дутуу | gpa = 0, credits = 0 хүчинтэй; gpa = -0.1 алдаа шиддэг гэж шалгах |
+| 51 | `if (hasViolation) return 0` | `hasViolation` шалгалтыг үргэлж үнэн / худал болгосон — *removed conditional* | 2 | Тест дутуу | Зөрчилтэй → яг 0, зөрчилгүй → яг 100 гэж шалгах |
+| 52 | `gpa >= 3.8 && credits >= 15` → 100 | Нөхцөлийн заагийг өөрчилсөн ×2; нөхцөлийг үргэлж үнэн / худал болгосон ×4; буцаах утгыг `0` болгосон — *changed conditional boundary; removed conditional; replaced int return with 0* | 7 | Тест дутуу | `assertEquals(100, ...)`; 3.8/15, 3.79/15, 3.8/14 зааг тест |
+| 53 | `gpa >= 3.4 && credits >= 12` → 70 | Нөхцөлийн заагийг өөрчилсөн ×2; нөхцөлийг үргэлж үнэн / худал болгосон ×4; буцаах утгыг `0` болгосон — *changed conditional boundary; removed conditional; replaced int return with 0* | 7 | Тест дутуу | `assertEquals(70, ...)`; 3.4/12, 3.39/12, 3.4/11 зааг тест |
+| 54 | `gpa >= 3.0` → 50 | Нөхцөлийн заагийг өөрчилсөн; нөхцөлийг үргэлж үнэн / худал болгосон; буцаах утгыг `0` болгосон — *changed conditional boundary; removed conditional; replaced int return with 0* | 4 | Тест дутуу | `assertEquals(50, ...)`; 3.0 / 2.99 зааг тест |
 | | | **Нийт** | **46** | | |
 
 **Ангиллын үндэслэл:**
@@ -133,9 +133,9 @@ mvn test-compile org.pitest:pitest-maven:mutationCoverage -> results/pit-start.t
 >> Mutations with no coverage 0. Test strength 71%
 ```
 
-Зөвхөн assertion-ыг чангалснаар 28 мутант нэмж алагдсан: "replaced return value", "addition → subtraction",
-"replaced int return with 0", `hasViolation`-ийн мутантууд, мөр 36-ийн switch мутант бүгд үхсэн.
-Үлдсэн 18 амьд мутант нь бүгд **changed conditional boundary** болон зарим **removed conditional** (мөр 20, 23–26, 48, 52–54) —
+Зөвхөн assertion-ыг чангалснаар 28 мутант нэмж алагдсан: буцаах утгыг `""` / `0` / `0.0` болгосон, нэмэхийг хасах болгосон,
+`hasViolation`-ийн мутантууд, мөр 36-ийн switch мутант бүгд үхсэн.
+Үлдсэн 18 амьд мутант нь бүгд **нөхцөлийн заагийг өөрчилсөн** болон зарим **нөхцөлийг арилгасан** (мөр 20, 23–26, 48, 52–54) —
 эдгээр нь зөвхөн зааг утгын оролтоор алагдана, тиймээс B2 хэрэгтэй.
 
 ### B2 — Зааг утгын тестүүд нэмэх
