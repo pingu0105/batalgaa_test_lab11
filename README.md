@@ -13,8 +13,6 @@
 ## Хэрхэн ажиллуулах
 
 ```bash
-git clone <энэ репо>
-cd <репо>
 mvn clean verify                                          # тест + JaCoCo тайлан (target/site/jacoco/index.html)
 mvn test-compile org.pitest:pitest-maven:mutationCoverage # PIT тайлан (target/pit-reports/index.html)
 ```
